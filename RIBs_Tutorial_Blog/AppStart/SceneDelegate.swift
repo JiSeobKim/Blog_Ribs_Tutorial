@@ -11,26 +11,23 @@ import RIBs
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    
+    private var routing: LaunchRouting?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
         guard let scene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: scene)
+        self.window = window
         
         let component = AppComponent()
         let rootBuilder = RootBuilder(dependency: component)
         
         let router = rootBuilder.build()
-        let vc = router.viewControllable.uiviewController
+        self.routing = router
         
-        
-        vc.loadView()
-        window.rootViewController = vc
-        window.makeKeyAndVisible()
-        
-        router.interactable.activate()
-        router.load()
+        router.launch(from: window)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

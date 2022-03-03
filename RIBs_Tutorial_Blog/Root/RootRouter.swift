@@ -7,7 +7,7 @@
 
 import RIBs
 
-protocol RootInteractable: Interactable {
+protocol RootInteractable: Interactable, LoggedOutListener {
     var router: RootRouting? { get set }
     var listener: RootListener? { get set }
 }
@@ -16,11 +16,33 @@ protocol RootViewControllable: ViewControllable {
     // TODO: Declare methods the router invokes to manipulate the view hierarchy.
 }
 
-final class RootRouter: ViewableRouter<RootInteractable, RootViewControllable>, RootRouting {
+final class RootRouter: LaunchRouter<RootInteractable, RootViewControllable>, RootRouting {
 
-    // TODO: Constructor inject child builder protocols to allow building children.
-    override init(interactor: RootInteractable, viewController: RootViewControllable) {
+    private let loggedOutBuildable: LoggedOutBuildable
+    private var loggedOutRouting: Routing?
+    
+    init(
+        interactor: RootInteractable,
+        viewController: RootViewControllable,
+        loggedOutBuildable: LoggedOutBuildable
+    ) {
+        self.loggedOutBuildable = loggedOutBuildable
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
+    }
+    
+    func attachLoggedOut() {
+        guard loggedOutRouting == nil else { return }
+        
+        let router = loggedOutBuildable.build(withListener: interactor)
+        
+        attachChild(router)
+        loggedOutRouting = router
+        
+        viewControllable.present(
+            router.viewControllable,
+            animated: true,
+            completion: nil
+        )
     }
 }

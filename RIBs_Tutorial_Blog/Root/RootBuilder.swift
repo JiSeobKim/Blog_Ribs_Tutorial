@@ -12,15 +12,12 @@ protocol RootDependency: Dependency {
     // created by this RIB.
 }
 
-final class RootComponent: Component<RootDependency> {
+final class RootComponent: Component<RootDependency>, LoggedOutDependency {
 
-    // TODO: Declare 'fileprivate' dependencies that are only used by this RIB.
 }
 
-// MARK: - Builder
-
 protocol RootBuildable: Buildable {
-    func build() -> RootRouting
+    func build() -> LaunchRouting
 }
 
 final class RootBuilder: Builder<RootDependency>, RootBuildable {
@@ -29,11 +26,17 @@ final class RootBuilder: Builder<RootDependency>, RootBuildable {
         super.init(dependency: dependency)
     }
 
-    func build() -> RootRouting {
+    func build() -> LaunchRouting {
         let component = RootComponent(dependency: dependency)
         let viewController = RootViewController()
         let interactor = RootInteractor(presenter: viewController)
-        // listener 제거
-        return RootRouter(interactor: interactor, viewController: viewController)
+        
+        let loggedOutBuilder = LoggedOutBuilder(dependency: component)
+        
+        return RootRouter(
+            interactor: interactor,
+            viewController: viewController,
+            loggedOutBuildable: loggedOutBuilder
+        )
     }
 }
