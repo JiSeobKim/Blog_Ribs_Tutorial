@@ -12,7 +12,7 @@ protocol RootDependency: Dependency {
     // created by this RIB.
 }
 
-final class RootComponent: Component<RootDependency>, LoggedOutDependency {
+final class RootComponent: Component<RootDependency>, LoggedOutDependency, OffGameDependency {
 
 }
 
@@ -32,11 +32,13 @@ final class RootBuilder: Builder<RootDependency>, RootBuildable {
         let interactor = RootInteractor(presenter: viewController)
         
         let loggedOutBuilder = LoggedOutBuilder(dependency: component)
+        let offGameBuilder = OffGameBuilder(dependency: component)
         
         return RootRouter(
             interactor: interactor,
             viewController: viewController,
-            loggedOutBuildable: loggedOutBuilder
+            loggedOutBuildable: loggedOutBuilder,
+            offGameBuildable: offGameBuilder
         )
     }
 }

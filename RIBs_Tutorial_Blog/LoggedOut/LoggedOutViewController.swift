@@ -10,9 +10,7 @@ import RxSwift
 import UIKit
 
 protocol LoggedOutPresentableListener: AnyObject {
-    // TODO: Declare properties and methods that the view controller can invoke to perform
-    // business logic, such as signIn(). This protocol is implemented by the corresponding
-    // interactor class.
+    func didTapEnter(player1: String?, player2: String?)
 }
 
 final class LoggedOutViewController: UIViewController, LoggedOutPresentable, LoggedOutViewControllable {
@@ -95,6 +93,9 @@ final class LoggedOutViewController: UIViewController, LoggedOutPresentable, Log
     
     @objc
     func enterAction() {
-        print("탭탭탭 엔터 탭")
+        let player1Text = firstTextField.text
+        let player2Text = secondTextField.text
+        
+        listener?.didTapEnter(player1: player1Text, player2: player2Text)
     }
 }

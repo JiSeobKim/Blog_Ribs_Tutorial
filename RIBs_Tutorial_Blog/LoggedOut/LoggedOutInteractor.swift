@@ -18,7 +18,8 @@ protocol LoggedOutPresentable: Presentable {
 }
 
 protocol LoggedOutListener: AnyObject {
-    // TODO: Declare methods the interactor can invoke to communicate with other RIBs.
+    func loggedOutDidTapEnter(player1: String, player2: String)
+    
 }
 
 final class LoggedOutInteractor: PresentableInteractor<LoggedOutPresentable>, LoggedOutInteractable, LoggedOutPresentableListener {
@@ -41,5 +42,12 @@ final class LoggedOutInteractor: PresentableInteractor<LoggedOutPresentable>, Lo
     override func willResignActive() {
         super.willResignActive()
         // TODO: Pause any business logic.
+    }
+    
+    func didTapEnter(player1: String?, player2: String?) {
+        let name1 = (player1 == nil || player1?.isEmpty == true) ? "Player 1" :  player1!
+        let name2 = (player2 == nil || player2?.isEmpty == true) ? "Player 2" :  player2!
+        
+        listener?.loggedOutDidTapEnter(player1: name1, player2: name2)
     }
 }

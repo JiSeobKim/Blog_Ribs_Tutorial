@@ -7,6 +7,7 @@
 
 import RIBs
 import RxSwift
+import RxRelay
 
 protocol OffGameRouting: ViewableRouting {
     // TODO: Declare methods the interactor can invoke to manage sub-tree via the router.
@@ -14,7 +15,10 @@ protocol OffGameRouting: ViewableRouting {
 
 protocol OffGamePresentable: Presentable {
     var listener: OffGamePresentableListener? { get set }
-    // TODO: Declare methods the interactor can invoke the presenter to present data.
+    
+    // 추가
+    func updateScore(playerScore1: String, playerScore2: String)
+    
 }
 
 protocol OffGameListener: AnyObject {
@@ -26,16 +30,30 @@ final class OffGameInteractor: PresentableInteractor<OffGamePresentable>, OffGam
     weak var router: OffGameRouting?
     weak var listener: OffGameListener?
 
-    // TODO: Add additional dependencies to constructor. Do not perform any logic
-    // in constructor.
-    override init(presenter: OffGamePresentable) {
+    private let score: BehaviorRelay<GameScore>
+    
+    init(
+        presenter: OffGamePresentable,
+        score: BehaviorRelay<GameScore>
+    ) {
+        self.score = score
         super.init(presenter: presenter)
         presenter.listener = self
     }
+    
 
     override func didBecomeActive() {
         super.didBecomeActive()
-        // TODO: Implement business logic here.
+        
+        score
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { score in
+                let score1 = String(score.player1Score)
+                let score2 = String(score.player2Score)
+                
+                self.presenter.updateScore(playerScore1: score1, playerScore2: score2)
+                
+            }).disposeOnDeactivate(interactor: self)
     }
 
     override func willResignActive() {

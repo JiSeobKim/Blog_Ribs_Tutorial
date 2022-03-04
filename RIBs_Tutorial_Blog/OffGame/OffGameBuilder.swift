@@ -26,9 +26,9 @@ final class OffGameComponent: Component<OffGameDependency> {
     fileprivate var score: BehaviorRelay<GameScore>
     
     init(
+        dependency: OffGameDependency,
         player1Name: String,
-        player2Name: String,
-        dependency: OffGameDependency
+        player2Name: String
     ) {
         self.player1Name = player1Name
         self.player2Name = player2Name
@@ -49,10 +49,18 @@ final class OffGameBuilder: Builder<OffGameDependency>, OffGameBuildable {
         super.init(dependency: dependency)
     }
 
-    func build(withListener listener: OffGameListener) -> OffGameRouting {
-        let component = OffGameComponent(dependency: dependency)
-        let viewController = OffGameViewController()
-        let interactor = OffGameInteractor(presenter: viewController)
+    func build(withListener listener: OffGameListener, player1: String, player2: String) -> OffGameRouting {
+        
+        let component = OffGameComponent(dependency: dependency, player1Name: player1, player2Name: player2)
+        let viewController = OffGameViewController(
+            player1Name: component.player1Name,
+            player2Name: component.player2Name
+        )
+        let interactor = OffGameInteractor(
+            presenter: viewController,
+            score: component.score
+        )
+        
         interactor.listener = listener
         return OffGameRouter(interactor: interactor, viewController: viewController)
     }

@@ -10,6 +10,8 @@ import RxSwift
 
 protocol RootRouting: ViewableRouting {
     func attachLoggedOut()
+    func detachLoggedOut()
+    func attachOffGame(player1: String, player2: String)
 }
 
 protocol RootPresentable: Presentable {
@@ -40,5 +42,10 @@ final class RootInteractor: PresentableInteractor<RootPresentable>, RootInteract
     override func willResignActive() {
         super.willResignActive()
         // TODO: Pause any business logic.
+    }
+    
+    func loggedOutDidTapEnter(player1: String, player2: String) {
+        router?.detachLoggedOut()
+        router?.attachOffGame(player1: player1, player2: player2)
     }
 }
